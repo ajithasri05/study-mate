@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://probable-funicular-5g6xqj7vjj4427pg.app.github.dev:8000'
 
 function App() {
   const [content, setContent] = useState('')
@@ -31,6 +31,7 @@ function App() {
     } catch (e) { console.error(e) }
   }
 
+  // If `VITE_API_URL` is not set, use relative paths so Vite's dev server proxy forwards requests.
   const fetchHistory = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/history`)
