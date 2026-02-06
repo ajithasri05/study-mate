@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
 function App() {
   const [content, setContent] = useState('')
   const [summary, setSummary] = useState(null)
@@ -23,7 +25,7 @@ function App() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch('/stats')
+      const res = await fetch(`${API_BASE_URL}/stats`)
       const data = await res.json()
       setStats(data)
     } catch (e) { console.error(e) }
@@ -31,7 +33,7 @@ function App() {
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch('/history')
+      const res = await fetch(`${API_BASE_URL}/history`)
       const data = await res.json()
       setHistory(data)
     } catch (e) { console.error(e) }
@@ -49,7 +51,7 @@ function App() {
     setProgress(0)
 
     try {
-      const summRes = await fetch('/summarize', {
+      const summRes = await fetch(`${API_BASE_URL}/summarize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -70,7 +72,7 @@ function App() {
       // Fetch MCQs separately so it doesn't block the summary if it fails
       let mcqs = [];
       try {
-        const mcqRes = await fetch('/generate-mcqs', {
+        const mcqRes = await fetch(`${API_BASE_URL}/generate-mcqs`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text: content, difficulty })
@@ -101,7 +103,7 @@ function App() {
     if (!content.trim()) return
     setIsRephrasing(true)
     try {
-      const res = await fetch('/rephrase', {
+      const res = await fetch(`${API_BASE_URL}/rephrase`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: content, style })
@@ -124,7 +126,7 @@ function App() {
     formData.append('file', file)
 
     try {
-      const response = await fetch('/parse-file', {
+      const response = await fetch(`${API_BASE_URL}/parse-file`, {
         method: 'POST',
         body: formData
       })
@@ -152,7 +154,7 @@ function App() {
         acc + (ans === summary.mcqs[idx].correct ? 1 : 0), 0)
 
       try {
-        await fetch('/save-quiz', {
+        await fetch(`${API_BASE_URL}/save-quiz`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -177,7 +179,7 @@ function App() {
   const handleClearHistory = async () => {
     if (confirm("Are you sure you want to clear all history? This cannot be undone.")) {
       try {
-        await fetch('/history', { method: 'DELETE' });
+        await fetch(`${API_BASE_URL}/history`, { method: 'DELETE' });
         setHistory([]);
       } catch (e) { console.error("Failed to clear history", e); }
     }
@@ -199,7 +201,7 @@ function App() {
         return;
       }
 
-      const res = await fetch('/generate-mcqs', {
+      const res = await fetch(`${API_BASE_URL}/generate-mcqs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: context, difficulty: 'medium' })
