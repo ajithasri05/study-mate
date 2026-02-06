@@ -131,4 +131,7 @@ else:
         return {"message": "Backend is running. Frontend build (dist/) not found. Port unification inactive."}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Allow configuring the port via environment for Codespaces or hosting platforms
+    port = int(os.getenv("PORT") or os.getenv("FASTAPI_PORT") or 8000)
+    # Use uvicorn programmatically so `python server/main.py` respects env vars
+    uvicorn.run("server.main:app", host="0.0.0.0", port=port, reload=True)
